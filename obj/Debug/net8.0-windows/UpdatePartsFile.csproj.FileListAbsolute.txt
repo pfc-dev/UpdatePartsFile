@@ -28,3 +28,4 @@ C:\Users\robertb\source\repos\UpdatePartsFile\bin\Debug\net8.0-windows\SapData.p
 C:\Users\robertb\source\repos\UpdatePartsFile\bin\Debug\net8.0-windows\SapData.dll.config
 C:\Users\robertb\source\repos\UpdatePartsFile\bin\Debug\net8.0-windows\sapnco.pdb
 C:\Users\robertb\source\repos\UpdatePartsFile\bin\Debug\net8.0-windows\sapnco_utils.pdb
+C:\Users\robertb\source\repos\UpdatePartsFile\obj\Debug\net8.0-windows\UpdatePartsFile.sourcelink.json
