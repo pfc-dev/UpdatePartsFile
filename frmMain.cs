@@ -13,6 +13,7 @@ namespace UpdatePartsFile
         public frmMain()
         {
             InitializeComponent();
+            this.Shown += frmMain_Shown;
         }
 
         private void frmMain_Load(object sender, EventArgs e)
@@ -33,15 +34,28 @@ namespace UpdatePartsFile
             this.Show();
             Application.DoEvents();
 
-            if ( Program.gblnAutoMode == true )
+            
+
+        }
+        private void frmMain_Shown(object sender, EventArgs e)
+        {
+            if (Program.gblnAutoMode == true)
             {
 
 
+                // Check the sap connection
+                string result = CheckSapConnection(Program.gstrAbapAppServer);
+                if (result != "OK")
+                {
+                    lblMessage.Text = "Cannot connect to SAP, exiting program.";
+                    this.Cursor = Cursors.Default;
+                    // display a message box to the user
+                    MessageBox.Show("Cannot connect to SAP, exiting program.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    QuitApplication();
+                }
+
                 // load the workbook and update it automatically
                 Program.g_wb = Program.GetOpenWorkbook(Program.gstrFileToOpen);
-                // fill in the list of worksheet names on the combo box
-
-
 
                 if (Program.g_wb != null)
                 {
@@ -61,7 +75,7 @@ namespace UpdatePartsFile
                         this.Cursor = Cursors.Default;
                         // display a message box to the user
                         MessageBox.Show("File is not compatible with this program version.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
+                        QuitApplication();
                     }
                     txtMain.Text += Environment.NewLine + "File Version: " + version;
                     Application.DoEvents();
@@ -72,7 +86,6 @@ namespace UpdatePartsFile
                     QuitApplication();
                 }
             }
-
         }
         private void btnChoseFile_Click(object sender, EventArgs e)
         {
@@ -135,36 +148,37 @@ namespace UpdatePartsFile
             lblMessage.Text = "File loaded.";
 
         }
-        private void cboSapSystem_SelectedValueChanged(object sender, EventArgs e)
+        private string CheckSapConnection(string sapSystem)
         {
             lblMessage.Text = "checking SAP connection, please wait...";
             this.Cursor = Cursors.WaitCursor;
             Application.DoEvents();
 
-            Program.gstrAbapAppServer = cboSapSystem.Text;
-            //close the current connection.
+            Program.gstrAbapAppServer = sapSystem;
+            // Close the current connection if open
             if (SapRfc.sapSystem != "")
                 SapRfc.CloseSapDest(SapRfc.sapSystem);
-            // open the new connection'
+            // Open the new connection
             SapRfc.OpenSapDest(Program.gstrAbapAppServer);
             if (SapRfc.SapDestOk())
             {
                 lblMessage.Text = "SAP Connection: 'OK'";
-
                 txtMain.Text += Environment.NewLine + "SAP Connection: 'OK'";
-                
-
-                //lblSapMode.Text = Program.gstrAbapAppServer + " Online Mode";
-                // set the global variable to indicate online mode
                 Program.gblnOfflineMode = false;
+                this.Cursor = Cursors.Default;
+                return "OK";
             }
             else
             {
                 lblMessage.Text = "Unable to connect to SAP.";
                 Program.gblnOfflineMode = true;
+                this.Cursor = Cursors.Default;
+                return "FAIL";
             }
-
-            this.Cursor = Cursors.Default;
+        }
+        private void cboSapSystem_SelectedValueChanged(object sender, EventArgs e)
+        {
+            string result = CheckSapConnection(cboSapSystem.Text);
         }
         private void btnQuit_Click(object sender, EventArgs e)
         {
@@ -246,7 +260,7 @@ namespace UpdatePartsFile
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-           
+
             UpdateFile();
 
         }
@@ -315,6 +329,7 @@ namespace UpdatePartsFile
 
             }
         }
+
 
     }
 }

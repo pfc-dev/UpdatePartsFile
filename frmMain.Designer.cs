@@ -209,6 +209,7 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Update SAP Parts File";
             Load += frmMain_Load;
+            Shown += frmMain_Shown;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             panel2.ResumeLayout(false);
